@@ -26,7 +26,14 @@ async function run() {
 
     app.get("/tasks/:email", async (req, res) => {
       const email = req.params.email;
-      const query = { email: email };
+      const query = { email: email, status: 0 };
+      const totalData = await tasksCollection.find(query).toArray();
+      res.send(totalData);
+    });
+
+    app.get("/completedTasks/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email, status: 1 };
       const totalData = await tasksCollection.find(query).toArray();
       res.send(totalData);
     });
@@ -35,6 +42,16 @@ async function run() {
       const task = req.body;
       const result = await tasksCollection.insertOne(task);
       res.send({ success: true, result });
+    });
+
+    app.put("/completeTask/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const updateDoc = {
+        $set: { status: 1 },
+      };
+      const result = await tasksCollection.updateOne(filter, updateDoc);
+      res.send(result);
     });
 
     app.put("/tasks/:id", async (req, res) => {
