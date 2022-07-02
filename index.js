@@ -36,6 +36,13 @@ async function run() {
       const result = await tasksCollection.insertOne(task);
       res.send({ success: true, result });
     });
+
+    app.delete("/tasks/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await tasksCollection.deleteOne(query);
+      res.send(result);
+    });
   } finally {
   }
 }
